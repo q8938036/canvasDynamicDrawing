@@ -1,0 +1,141 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Untitled Document</title>
+</head>
+<script src="./pointData.js"></script>
+<script src="./utils.js"></script>
+<style>
+  *{
+    margin: 0;
+    padding: 0;
+  }
+  .gold{
+    font-size: 30px;
+    width: 300px;
+    height: 100px;
+    background: skyblue;
+  }
+  .title_bar{
+    opacity: 0;
+    font-size: 35px;
+    color:#ffffff;
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    transition: 2s;
+    -webkit-transition:2s;
+  }
+  .bar{
+    font-size: 58px;
+  }
+  .item_bar{
+    margin-top: 80px;
+  }
+  .item_bar :first-child{
+    font-size: 45px;
+  }
+</style>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="title_bar" id="bar">
+      <div class="bar">眼部分析</div>
+      <ul class="item_bar">
+        <li>圆眼角</li>
+        <li>内眼角度数：</li>
+        <li>65度</li>
+      </ul>
+      <ul class="item_bar">
+        <li>眼角上扬</li>
+      </ul>
+      <ul class="item_bar">
+        <li>有卧蚕</li>
+      </ul>
+      <ul class="item_bar">
+        <li>颧弓留白适中</li>
+        <li>留白:3.31cm</li>
+      </ul>
+      <ul class="item_bar">
+        <li>眉毛偏粗</li>
+        <li>角度47.4度</li>
+      </ul>
+    <!-- </div>
+    <button class="gold" onclick="goldThree()">黄金三角</button>
+    <button class="gold" onclick="windTest()">气韵测试</button> -->
+    <script>
+      const canvas = document.getElementById('canvas')
+      const context = canvas.getContext('2d');
+      let windowx = document.body.clientWidth
+      let windowy = document.body.clientHeight
+      const img = new Image();
+      img.crossOrigin = '*';
+      img.onload = async()=>{
+        let imgx = img.width 
+        let imgy = img.height
+        let [x,y] = [windowx,windowx/(imgx/imgy)]
+        canvas.width = x
+        canvas.height = y
+        console.log(x +'*'+ y)
+        context.drawImage(img, 0, 0, x, y);
+        goldThree()
+      };
+      img.src = 'http://loudspeaker.nhf.cn/Fm7XT-23eIKBDjOQ4kZTpTj6quX3?imageslim'
+
+      /**
+       * @description 黄金三角
+       */
+      const goldThree = async()=>{
+        let pointListCopy = JSON.parse(JSON.stringify(pointList))
+        let lineListCopy = JSON.parse(JSON.stringify(lineList))
+        context.clearRect(0,0,canvas.width,canvas.height);
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        document.getElementById('bar').style.opacity=0
+        await delay.apply(this,[0,drawPointAndLines,context,pointListCopy.three,'point'])
+        await delay.apply(this,[1000,drawPointAndLines,context,pointListCopy.other,'point'])
+        await delay.apply(this,[0,drawPointAndLines,context,[lineListCopy.three[0]],'line'])
+        await delay.apply(this,[1000,drawPointAndLines,context,[lineListCopy.three[1]],'line'])
+        await delay.apply(this,[3500,drawPointAndLines,context,lineListCopy.other,'line'])
+        setTimeout(()=>{
+          windTest()
+        },4000)
+        
+      }
+
+      /**
+        * @description 气韵测试
+        */
+      const windTest = async()=>{
+        context.clearRect(0,0,canvas.width,canvas.height);
+        let i = 1000
+        let timess = setInterval(async()=>{
+          i+=10
+          let px = -750
+          let py =  -400
+          let scale = 2.3
+          context.drawImage(img, px, py, i/1000*canvas.width, i/1000*canvas.height);
+          if (i>=2300) {
+            clearInterval(timess)
+            let boxListCopy = JSON.parse(JSON.stringify(boxList))
+            let scaleListCopy = JSON.parse(JSON.stringify(scaleList))
+            await delay.apply(this,[0,drawPointAndLines,context,boxListCopy,'line',scale,px,py])
+            await delay.apply(this,[2000,drawPointAndLines,context,scaleListCopy.slice(0,-1),'line',scale,px,py])
+            await delay.apply(this,[2000,drawPointAndLines,context,scaleListCopy.slice(-1),'line',scale,px,py])
+            
+            document.getElementById('bar').style.opacity=1
+            // 顺时针画一段弧
+            context.arc( 329*2*scale-50+px, 185*2*scale+py, 50, angleToRadian( 180 ), angleToRadian( 210 ) ); //弧度是顺时针算的
+            context.stroke();
+            context.fillStyle = '#FFFFFF'
+            context.font = '25px Arial'
+            context.textBaseline = 'right'
+            context.fillText('7度',329*2*scale-150+px,185*2*scale+py)
+            setTimeout(()=>{
+              goldThree()
+            },3000)
+          }
+        },10)
+      }
+
+    </script>
+</body>
+</html>
